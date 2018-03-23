@@ -32,7 +32,10 @@ impl HttpsConnector<HttpConnector> {
     pub fn new(threads: usize, handle: &Handle) -> Result<Self, Error> {
         let mut http = HttpConnector::new(threads, handle);
         http.enforce_http(false);
-        let tls = TlsConnector::builder()?.build()?;
+        let mut builder = TlsConnector::builder()?;
+        builder.danger_disable_certificate_validation_entirely();
+        let tls = builder.build()?;
+        // let tls = TlsConnector::builder()?.build()?;
         Ok(HttpsConnector::from((http, tls)))
     }
 }
